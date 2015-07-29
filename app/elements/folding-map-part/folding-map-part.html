@@ -7,16 +7,20 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-<!--<link rel="stylesheet" href="">-->
+<link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
 <script src="bower_components/leaflet/dist/leaflet.js"></script>
 <dom-module id="folding-map-part">
   <style>
     :host {
       display: block;
     }
+    #map{
+      height: 400px;
+      width: 100%;
+    }
   </style>
   <template>
-    <!--<div id="map"></div>-->
+    <div id="map"></div>
     <web-socket id="socketHandler"></web-socket>
   </template>
 </dom-module>
@@ -28,7 +32,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       map: Object
     },
     ready: function () {
-//      this.map = L.map(this.$.map);
+      this.initializeMap();
+    },
+
+    initializeMap: function () {
+      var map = this.map;
+      var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+      var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12, attribution: osmAttrib});
+
+      map = L.map(this.$.map);
+
+      map.on('load', function () {
+        map.setView(new L.LatLng(51.3, 0.7),5);
+        map.addLayer(osm);
+        map.invalidateSize();
+      });
     }
   });
 })();
