@@ -7,6 +7,8 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
+<!--<link rel="stylesheet" href="">-->
+<script src="bower_components/leaflet/dist/leaflet.js"></script>
 <dom-module id="folding-map-part">
   <style>
     :host {
@@ -14,6 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <template>
+    <!--<div id="map"></div>-->
     <web-socket id="socketHandler"></web-socket>
   </template>
 </dom-module>
@@ -21,8 +24,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 (function() {
   Polymer({
     is: 'folding-map-part',
-    ready: function (e) {
-      var socketHandler = this.$.socketHandler;
+    properties: {
+      map: Object
+    },
+    ready: function () {
+//      this.map = L.map(this.$.map);
     }
   });
 })();

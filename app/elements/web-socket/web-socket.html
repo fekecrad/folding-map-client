@@ -42,8 +42,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       el.webSocket.onopen = function () {
         el.webSocket.send('Connected');
       };
-      el.onmessage = function (message) {
-        el.message = message;
+      el.webSocket.onmessage = function (message) {
+        el.message = message.data;
+        console.log(message.data);
       }
     }
   });

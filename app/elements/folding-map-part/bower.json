@@ -2,6 +2,6 @@
   "name": "folding-map-part",
   "private": true,
   "dependencies": {
-
+    "leaflet": "~0.7.3"
   }
 }
