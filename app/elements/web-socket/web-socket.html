@@ -17,7 +17,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   </style>
   <template>
-    <div>Hello from <span>{{foo}}</span></div>
+    <div><span>{{message}}</span></div>
   </template>
 </dom-module>
 <script>
@@ -26,13 +26,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'web-socket',
 
     properties: {
-
+      webSocket: {
+        type: Object
+      },
+      message: String
     },
 
     ready: function () {
-      var webSocket = new WebSocket("ws://10.0.0.44:8080", "echo-protocol");
-      webSocket.onopen = function () {
-        webSocket.send('kokot');
+      this.initializeWebSocket();
+    },
+
+    initializeWebSocket: function () {
+      var el = this;
+      el.webSocket = new WebSocket("ws://10.0.0.44:8080", "echo-protocol");
+      el.webSocket.onopen = function () {
+        el.webSocket.send('Connected');
+      };
+      el.onmessage = function (message) {
+        el.message = message;
       }
     }
   });
