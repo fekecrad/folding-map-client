@@ -21,7 +21,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <template>
     <div id="map"></div>
-    <web-socket id="socketHandler"></web-socket>
+    <web-socket id="socketHandler" position="[[position]]" zoom="[[zoom]]">
+    </web-socket>
   </template>
 </dom-module>
 <script>
@@ -30,15 +31,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'folding-map-part',
     properties: {
       map: Object,
-      defaultPosition: {
+      position: {
         type: Object,
-        value: new L.LatLng(51.3, 0.7)
+        value: new L.LatLng(51.3, 0.7),
+        notify: true
       },
-      defaultZoom: {
+      zoom: {
         type: Number,
-        value: 10
+        value: 10,
+        notify: true
       }
     },
+
+    observers: [
+      '_positionAndZoomChanged(position, zoom)'
+    ],
+
     ready: function () {
       this._initializeMap();
     },
@@ -48,7 +56,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var osm = new L.TileLayer(osmUrl);
 
       this.map = new L.Map(this.$.map);
-      this.map.setView(this.defaultPosition, this.defaultZoom);
+      this.map.setView(this.position, this.zoom);
       this.map.addLayer(osm);
       this._setMapEvents();
 
@@ -56,6 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var thatMap = this.map;
       setTimeout(function() {
         thatMap.invalidateSize();
+
       }, 50 );
     },
 
@@ -69,9 +78,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
     },
 
+
     _sendSocketMessage: function(data) {
       console.log(data);
       //this.$.socketHandler.sendMessage(data);
+    },
+
+    _positionAndZoomChanged: function(position, zoom) {
+      if(this.map) {
+        this.map.setView(position);
+        this.map.setZoom(zoom);
+      }
     }
   });
 })();
