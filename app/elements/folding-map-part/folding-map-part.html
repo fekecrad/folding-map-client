@@ -29,26 +29,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer({
     is: 'folding-map-part',
     properties: {
-      map: Object
+      map: Object,
+      defaultPosition: {
+        type: Object,
+        value: new L.LatLng(51.3, 0.7)
+      },
+      defaultZoom: {
+        type: Number,
+        value: 10
+      }
     },
     ready: function () {
-      this.initializeMap();
+      this._initializeMap();
     },
 
-    initializeMap: function () {
+    _initializeMap: function () {
       var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12});
+      var osm = new L.TileLayer(osmUrl);
 
       this.map = new L.Map(this.$.map);
-      this.map.setView(new L.LatLng(51.3, 0.7), 10);
+      this.map.setView(this.defaultPosition, this.defaultZoom);
       this.map.addLayer(osm);
+      this._setMapEvents();
 
       //quick hack - https://github.com/Leaflet/Leaflet/issues/694
       var thatMap = this.map;
       setTimeout(function() {
         thatMap.invalidateSize();
       }, 50 );
+    },
 
+    _setMapEvents: function() {
+      var el = this;
+      this.map.on('drag', function(e) {
+        el._sendSocketMessage(JSON.stringify(e.target.getCenter()));
+      });
+      this.map.on('zoomend', function(e) {
+        el._sendSocketMessage(e.target.getZoom());
+      });
+    },
+
+    _sendSocketMessage: function(data) {
+      console.log(data);
+      //this.$.socketHandler.sendMessage(data);
     }
   });
 })();
