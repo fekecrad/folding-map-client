@@ -8,7 +8,9 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <dom-module id="web-socket">
+<template>
 
+</template>
 </dom-module>
 <script>
 (function() {
@@ -26,6 +28,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       protocol: {
         type: String,
         value: "echo-protocol"
+      },
+      lat:{
+        type: Number,
+        notify: true
+      },
+      lng:{
+        type: Number,
+        notify: true
+      },
+      zoom:{
+        type: Number,
+        notify: true
       }
     },
 
@@ -41,7 +55,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       };
       el.webSocket.onmessage = function (message) {
         var data = JSON.parse(message.data);
-        console.log(data);
         el.lat = data.lat;
         el.lng = data.lng;
         el.zoom = data.zoom;

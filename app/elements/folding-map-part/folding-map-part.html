@@ -21,8 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <template>
     <div id="map"></div>
-    <web-socket id="socketHandler" lat="{{position.lat}}"
-                lng="{{position.lng}}" zoom="{{zoom}}">
+    <web-socket id="socketHandler" lat="{{lat}}" lng="{{lng}}" zoom="{{zoom}}">
     </web-socket>
   </template>
 </dom-module>
@@ -32,9 +31,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'folding-map-part',
     properties: {
       map: Object,
-      position: {
-        type: Object,
-        value: new L.LatLng(51.3, 0.7),
+      lat: {
+        type: Number,
+        value: 51.3,
+        notify: true
+      },
+      lng: {
+        type: Number,
+        value: 0.7,
         notify: true
       },
       zoom: {
@@ -45,7 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     observers: [
-      '_positionAndZoomChanged(position.lat, position.lng, zoom)'
+      '_positionAndZoomChanged(lat, lng, zoom)'
     ],
 
     ready: function () {
@@ -57,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       var osm = new L.TileLayer(osmUrl);
 
       this.map = new L.Map(this.$.map);
-      this.map.setView(this.position, this.zoom);
+      this.map.setView(new L.LatLng(this.lat, this.lng), this.zoom);
       this.map.addLayer(osm);
       this._setMapEvents();
 
@@ -75,7 +79,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         el._sendSocketMessage(el._gatherMessageData(e.target))
       });
       this.map.on('zoomend', function(e) {
-
         el._sendSocketMessage(el._gatherMessageData(e.target))
       });
     },
@@ -94,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _positionAndZoomChanged: function(lat, lng, zoom) {
       if(this.map) {
-        this.map.setView(position);
+        this.map.setView(new L.LatLng(lat, lng));
         this.map.setZoom(zoom);
       }
     }
