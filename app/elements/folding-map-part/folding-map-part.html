@@ -15,7 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       display: block;
     }
     #map{
-      height: 400px;
+      height: 100vh;
       width: 100%;
     }
   </style>
@@ -36,18 +36,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     initializeMap: function () {
-      var map = this.map;
       var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-      var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12, attribution: osmAttrib});
+      var osm = new L.TileLayer(osmUrl, {minZoom: 1, maxZoom: 12});
 
-      map = L.map(this.$.map);
+      this.map = new L.Map(this.$.map);
+      this.map.setView(new L.LatLng(51.3, 0.7), 10);
+      this.map.setView(new L.LatLng(51.3, 10 ));
+      this.map.addLayer(osm);
 
-      map.on('load', function () {
-        map.setView(new L.LatLng(51.3, 0.7),5);
-        map.addLayer(osm);
-        map.invalidateSize();
-      });
+      //quick hack - https://github.com/Leaflet/Leaflet/issues/694
+      var thatMap = this.map;
+      setTimeout(function() {
+        thatMap.invalidateSize();
+      }, 50 );
+
     }
   });
 })();
