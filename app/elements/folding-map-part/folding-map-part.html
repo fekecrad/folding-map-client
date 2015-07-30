@@ -97,8 +97,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _positionAndZoomChanged: function(lat, lng, zoom) {
       if(this.map) {
-        this.map.setView(new L.LatLng(lat, lng));
-        this.map.setZoom(zoom);
+        var thatMap = this.map;
+        setTimeout(function() {
+          thatMap.setView(new L.LatLng(lat, lng));
+          thatMap.setZoom(zoom);
+          thatMap.invalidateSize();
+        }, 3000);
+
       }
     }
   });
