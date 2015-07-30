@@ -21,7 +21,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
   <template>
     <div id="map"></div>
-    <web-socket id="socketHandler" position="[[position]]" zoom="[[zoom]]">
+    <web-socket id="socketHandler" lat="{{position.lat}}"
+                lng="{{position.lng}}" zoom="{{zoom}}">
     </web-socket>
   </template>
 </dom-module>
@@ -44,7 +45,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     observers: [
-      '_positionAndZoomChanged(position, zoom)'
+      '_positionAndZoomChanged(position.lat, position.lng, zoom)'
     ],
 
     ready: function () {
@@ -71,20 +72,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _setMapEvents: function() {
       var el = this;
       this.map.on('drag', function(e) {
-        el._sendSocketMessage(JSON.stringify(e.target.getCenter()));
+        el._sendSocketMessage(el._gatherMessageData(e.target))
       });
       this.map.on('zoomend', function(e) {
-        el._sendSocketMessage(e.target.getZoom());
+
+        el._sendSocketMessage(el._gatherMessageData(e.target))
       });
     },
 
-
-    _sendSocketMessage: function(data) {
-      console.log(data);
-      //this.$.socketHandler.sendMessage(data);
+    _gatherMessageData: function(target) {
+      return JSON.stringify({
+        lat: target.getCenter().lat,
+        lng: target.getCenter().lng,
+        zoom: target.getZoom()
+      })
     },
 
-    _positionAndZoomChanged: function(position, zoom) {
+    _sendSocketMessage: function(data) {
+      this.$.socketHandler.sendMessage(data);
+    },
+
+    _positionAndZoomChanged: function(lat, lng, zoom) {
       if(this.map) {
         this.map.setView(position);
         this.map.setZoom(zoom);

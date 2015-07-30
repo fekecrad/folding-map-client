@@ -7,9 +7,6 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
-
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
 <dom-module id="web-socket">
 
 </dom-module>
@@ -43,8 +40,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         el.webSocket.send('Connected');
       };
       el.webSocket.onmessage = function (message) {
-        el.message = message.data;
-        console.log(message.data);
+        var data = JSON.parse(message.data);
+        console.log(data);
+        el.lat = data.lat;
+        el.lng = data.lng;
+        el.zoom = data.zoom;
       }
     },
 
