@@ -14,14 +14,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     :host {
       display: block;
     }
-    #map{
+    google-map{
       height: 100vh;
       width: 100%;
     }
   </style>
   <template>
-    <div id="map"></div>
-    <web-socket id="socketHandler" lat="{{lat}}" lng="{{lng}}" zoom="{{zoom}}">
+    <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
+    <web-socket id="socketHandler" lat="{{lat}}" lng="{{lng}}" zoom="{{zoom}}" viewStatus="{{viewStatus}}">
     </web-socket>
   </template>
 </dom-module>
@@ -45,21 +45,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Number,
         value: 10,
         notify: true
+      },
+      viewStatus: {
+        type: Object,
+        value: {
+          lat: 51.3,
+          lng: 0.7
+        },
+        notify: true
       }
     },
 
     observers: [
-      '_positionAndZoomChanged(lat, lng, zoom)'
+      '_positionAndZoomChanged(lat, lng, zoom)',
+      '_viewChanged(viewStatus.*)'
     ],
 
     ready: function () {
-      this._initializeMap();
+      console.log(this.$.map.google);
+      var el = this;
+      //this._initializeMap();
+      this.$.map.dragEvents = true;
+      this.$.map.addEventListener('google-map-dragend', function(e) {
+        el._sendSocketMessage(el._gatherMessageData(e.target));
+      });
+
+      this.$.map.addEventListener('google-map-ready', function(e) {
+        google.maps.event.addListener(el.$.map.map, 'zoom_changed', function() {
+          console.log('kokot');
+        });
+      });
     },
 
     _initializeMap: function () {
       var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      var osm = new L.TileLayer(osmUrl);
+      var osm = new L.TileLayer(osmUrl, {
+        detectRetina: true,
+        updateWhenIdle: true,
+        reuseTiles: true
+      });
 
+      console.log(this.map);
       this.map = new L.Map(this.$.map);
       this.map.setView(new L.LatLng(this.lat, this.lng), this.zoom);
       this.map.addLayer(osm);
@@ -70,24 +96,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setTimeout(function() {
         thatMap.invalidateSize();
 
-      }, 50 );
+      }, 50);
     },
 
     _setMapEvents: function() {
       var el = this;
-      this.map.on('drag', function(e) {
-        el._sendSocketMessage(el._gatherMessageData(e.target))
+      this.map.on('dragend', function(e) {
+        el._sendSocketMessage(el._gatherMessageData(e.target));
       });
       this.map.on('zoomend', function(e) {
-        el._sendSocketMessage(el._gatherMessageData(e.target))
+        el._sendSocketMessage(el._gatherMessageData(e.target));
       });
     },
 
     _gatherMessageData: function(target) {
       return JSON.stringify({
-        lat: target.getCenter().lat,
-        lng: target.getCenter().lng,
-        zoom: target.getZoom()
+        lat: target.latitude,
+        lng: target.longitude,
+        zoom: 10
       })
     },
 
@@ -97,14 +123,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _positionAndZoomChanged: function(lat, lng, zoom) {
       if(this.map) {
-        var thatMap = this.map;
-        setTimeout(function() {
-          thatMap.setView(new L.LatLng(lat, lng));
-          thatMap.setZoom(zoom);
-          thatMap.invalidateSize();
-        }, 3000);
-
+        var map = this.map;
+        console.log('changing view');
+        console.log(lat);
+        console.log(lng);
+        console.log(zoom);
+        map.setView(new L.LatLng(lat, lng));
+        map.setZoom(zoom);
       }
+    },
+
+    _viewChanged: function (record) {
+      console.log(record);
     }
   });
 })();
