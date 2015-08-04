@@ -44,6 +44,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       viewStatus: {
         type: Object,
         notify: true
+      },
+      composition: {
+        type: Array,
+        notify: true
       }
     },
 
@@ -59,9 +63,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 //      };
       el.webSocket.onmessage = function (message) {
         var data = JSON.parse(message.data);
+        console.log(data);
         el.lat = data.lat;
         el.lng = data.lng;
         el.zoom = data.zoom;
+        el.composition = data.composition;
       }
     },
 

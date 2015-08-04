@@ -10,7 +10,11 @@
   </style>
   <template>
     <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
-    <web-socket id="socketHandler" lat="{{lat}}" lng="{{lng}}" zoom="{{zoom}}" viewStatus="{{viewStatus}}">
+    <web-socket id="socketHandler"
+                lat="{{lat}}"
+                lng="{{lng}}"
+                zoom="{{zoom}}"
+                composition="{{deviceComposition}}">
     </web-socket>
   </template>
 </dom-module>
@@ -33,6 +37,10 @@
       zoom: {
         type: Number,
         value: 10,
+        notify: true
+      },
+      deviceComposition: {
+        type: Array,
         notify: true
       }
     },
@@ -73,8 +81,7 @@
         lat: el.latitude,
         lng: el.longitude,
         zoom: el.zoom,
-        mapBounds: this._getMapBounds(),
-        mapSize: this._getMapSize()
+        mapBounds: this._getMapBounds()
       })
     },
     
@@ -94,8 +101,8 @@
 
     _getMapSize: function() {
       return {
-        'height': this.$.map.getBoundingClientRect().height,
-        'width': this.$.map.getBoundingClientRect().width
+        'h': this.$.map.getBoundingClientRect().height,
+        'w': this.$.map.getBoundingClientRect().width
       }
     },
 
