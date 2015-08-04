@@ -43,6 +43,8 @@
 
     _initializeMap: function () {
       this.$.map.dragEvents = true;
+      this.$.map.disableDefaultUi = true;
+      //this.$.map.signedIn = true;
       this._setMapEvents();
     },
 
@@ -64,8 +66,22 @@
       return JSON.stringify({
         lat: target.latitude,
         lng: target.longitude,
-        zoom: target.zoom
+        zoom: target.zoom,
+        bounds: this._gatherMapBounds(target.map.getBounds())
       })
+    },
+    
+    _gatherMapBounds: function(bounds) {
+      return {
+        'northEast' : {
+          'lat': bounds.getNorthEast().lat(),
+          'lng': bounds.getNorthEast().lng()
+        },
+        'southWest' : {
+          'lat': bounds.getSouthWest().lat(),
+          'lng': bounds.getSouthWest().lng()
+        }
+      }
     },
 
     _sendSocketMessage: function(data) {
