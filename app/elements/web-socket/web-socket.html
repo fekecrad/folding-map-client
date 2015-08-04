@@ -54,9 +54,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _initializeWebSocket: function () {
       var el = this;
       el.webSocket = new WebSocket(this.url, this.protocol);
-      el.webSocket.onopen = function () {
-        el.webSocket.send('Connected');
-      };
+//      el.webSocket.onopen = function () {
+//        el.webSocket.send('Connected');
+//      };
       el.webSocket.onmessage = function (message) {
         var data = JSON.parse(message.data);
         el.lat = data.lat;
