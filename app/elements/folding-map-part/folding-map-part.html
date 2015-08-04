@@ -51,27 +51,30 @@
     _setMapEvents: function() {
       var el = this;
       el.$.map.addEventListener('google-map-dragend', function(e) {
-        el._sendSocketMessage(el._gatherMessageData(e.target));
+        el._sendSocketMessage(el._gatherMessageData());
       });
 
       el.$.map.addEventListener('google-map-ready', function() {
         google.maps.event.addListener(el.$.map.map, 'zoom_changed',
           function() {
-            el._sendSocketMessage(el._gatherMessageData(el.$.map));
+            el._sendSocketMessage(el._gatherMessageData());
         });
       });
     },
 
-    _gatherMessageData: function(target) {
+    _gatherMessageData: function() {
+      var el = this.$.map;
       return JSON.stringify({
-        lat: target.latitude,
-        lng: target.longitude,
-        zoom: target.zoom,
-        bounds: this._gatherMapBounds(target.map.getBounds())
+        lat: el.latitude,
+        lng: el.longitude,
+        zoom: el.zoom,
+        mapBounds: this._getMapBounds(),
+        mapSize: this._getMapSize()
       })
     },
     
-    _gatherMapBounds: function(bounds) {
+    _getMapBounds: function() {
+      var bounds = this.$.map.map.getBounds();
       return {
         'northEast' : {
           'lat': bounds.getNorthEast().lat(),
@@ -81,6 +84,13 @@
           'lat': bounds.getSouthWest().lat(),
           'lng': bounds.getSouthWest().lng()
         }
+      }
+    },
+
+    _getMapSize: function() {
+      return {
+        'height': this.$.map.getBoundingClientRect().height,
+        'width': this.$.map.getBoundingClientRect().width
       }
     },
 
