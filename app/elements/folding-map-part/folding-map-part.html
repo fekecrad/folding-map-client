@@ -1,14 +1,3 @@
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<link rel="stylesheet" href="bower_components/leaflet/dist/leaflet.css">
-<script src="bower_components/leaflet/dist/leaflet.js"></script>
 <dom-module id="folding-map-part">
   <style>
     :host {
@@ -62,50 +51,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     ],
 
     ready: function () {
-      console.log(this.$.map.google);
-      var el = this;
-      //this._initializeMap();
-      this.$.map.dragEvents = true;
-      this.$.map.addEventListener('google-map-dragend', function(e) {
-        el._sendSocketMessage(el._gatherMessageData(e.target));
-      });
-
-      this.$.map.addEventListener('google-map-ready', function(e) {
-        google.maps.event.addListener(el.$.map.map, 'zoom_changed', function() {
-          console.log('kokot');
-        });
-      });
+      this._initializeMap();
     },
 
     _initializeMap: function () {
-      var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      var osm = new L.TileLayer(osmUrl, {
-        detectRetina: true,
-        updateWhenIdle: true,
-        reuseTiles: true
-      });
-
-      console.log(this.map);
-      this.map = new L.Map(this.$.map);
-      this.map.setView(new L.LatLng(this.lat, this.lng), this.zoom);
-      this.map.addLayer(osm);
+      this.$.map.dragEvents = true;
       this._setMapEvents();
-
-      //quick hack - https://github.com/Leaflet/Leaflet/issues/694
-      var thatMap = this.map;
-      setTimeout(function() {
-        thatMap.invalidateSize();
-
-      }, 50);
     },
 
     _setMapEvents: function() {
       var el = this;
-      this.map.on('dragend', function(e) {
+      el.$.map.addEventListener('google-map-dragend', function(e) {
         el._sendSocketMessage(el._gatherMessageData(e.target));
       });
-      this.map.on('zoomend', function(e) {
-        el._sendSocketMessage(el._gatherMessageData(e.target));
+
+      el.$.map.addEventListener('google-map-ready', function(e) {
+        google.maps.event.addListener(el.$.map.map, 'zoom_changed', function() {
+          console.log('zoom event fired');
+        });
       });
     },
 
