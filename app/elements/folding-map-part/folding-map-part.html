@@ -34,21 +34,8 @@
         type: Number,
         value: 10,
         notify: true
-      },
-      viewStatus: {
-        type: Object,
-        value: {
-          lat: 51.3,
-          lng: 0.7
-        },
-        notify: true
       }
     },
-
-    observers: [
-      '_positionAndZoomChanged(lat, lng, zoom)',
-      '_viewChanged(viewStatus.*)'
-    ],
 
     ready: function () {
       this._initializeMap();
@@ -65,9 +52,10 @@
         el._sendSocketMessage(el._gatherMessageData(e.target));
       });
 
-      el.$.map.addEventListener('google-map-ready', function(e) {
-        google.maps.event.addListener(el.$.map.map, 'zoom_changed', function() {
-          console.log('zoom event fired');
+      el.$.map.addEventListener('google-map-ready', function() {
+        google.maps.event.addListener(el.$.map.map, 'zoom_changed',
+          function() {
+            el._sendSocketMessage(el._gatherMessageData(el.$.map));
         });
       });
     },
@@ -76,28 +64,12 @@
       return JSON.stringify({
         lat: target.latitude,
         lng: target.longitude,
-        zoom: 10
+        zoom: target.zoom
       })
     },
 
     _sendSocketMessage: function(data) {
       this.$.socketHandler.sendMessage(data);
-    },
-
-    _positionAndZoomChanged: function(lat, lng, zoom) {
-      if(this.map) {
-        var map = this.map;
-        console.log('changing view');
-        console.log(lat);
-        console.log(lng);
-        console.log(zoom);
-        map.setView(new L.LatLng(lat, lng));
-        map.setZoom(zoom);
-      }
-    },
-
-    _viewChanged: function (record) {
-      console.log(record);
     }
   });
 })();

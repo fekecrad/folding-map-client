@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       url: {
         type: String,
-        value: "ws://192.168.0.15:8080"
+        value: "ws://localhost:3002"
       },
       protocol: {
         type: String,
@@ -45,7 +45,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         type: Object,
         notify: true
       }
-
     },
 
     ready: function () {
@@ -63,16 +62,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         el.lat = data.lat;
         el.lng = data.lng;
         el.zoom = data.zoom;
-
-
-
-        el.viewStatus = {
-          lat: data.lat,
-          lng: data.lng
-        };
-
-        el.set('viewStatus.lat', data.lat);
-        el.set('viewStatus.lng', data.lng);
       }
     },
 
