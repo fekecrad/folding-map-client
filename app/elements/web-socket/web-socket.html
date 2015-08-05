@@ -68,7 +68,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         el.lng = data.lng;
         el.zoom = data.zoom;
         el.composition = data.composition;
+        el._updateComposition();
       }
+    },
+
+    _updateComposition: function () {
+      for(var i in this.composition)
+      var device = this.composition[i];
+      console.log(device.fit.x);
+      console.log(device.fit.y);
     },
 
     sendMessage: function(message) {
