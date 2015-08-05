@@ -14,8 +14,14 @@
                 lat="{{lat}}"
                 lng="{{lng}}"
                 zoom="{{zoom}}"
+                device="{{device}}"
                 composition="{{deviceComposition}}">
     </web-socket>
+    <iron-localstorage id="localstorage"
+                       name="device"
+                       value="{{device}}"
+                       on-iron-localstorage-load-empty="_initializeDefaultDevice">
+    </iron-localstorage>
   </template>
 </dom-module>
 <script>
@@ -42,11 +48,23 @@
       deviceComposition: {
         type: Array,
         notify: true
+      },
+      device: {
+        type: Object,
+        notify: true
       }
     },
 
     ready: function () {
       this._initializeMap();
+    },
+
+    _initializeDefaultDevice: function() {
+      this.device = {
+        guid: null
+      };
+
+      this._initializeWebSocketConnection();
     },
 
     _initializeMap: function () {
@@ -63,7 +81,6 @@
       });
 
       el.$.map.addEventListener('google-map-ready', function() {
-        el._initializeWebSocketConnection();
         google.maps.event.addListener(el.$.map.map, 'zoom_changed',
           function() {
             el._sendSocketMessage(el._gatherMessageData());
