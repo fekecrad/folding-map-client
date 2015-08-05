@@ -48,6 +48,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       composition: {
         type: Array,
         notify: true
+      },
+      device: {
+        type: Object,
+        notify: true
       }
     },
 
@@ -63,16 +67,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 //      };
       el.webSocket.onmessage = function (message) {
         var data = JSON.parse(message.data);
-        console.log(data);
-        el.lat = data.lat;
-        el.lng = data.lng;
-        el.zoom = data.zoom;
-        el.composition = data.composition;
+
+        if(el._isInitialResponse(data)) {
+          el.set('device.guid', data.guid)
+        } else {
+          console.log(data);
+          el.lat = data.lat;
+          el.lng = data.lng;
+          el.zoom = data.zoom;
+          el.composition = data.composition;
+        }
+
       }
     },
 
     sendMessage: function(message) {
       this.webSocket.send(message);
+    },
+
+    _isInitialResponse: function(data) {
+      return data.hasOwnProperty('guid')
     }
   });
 })();
