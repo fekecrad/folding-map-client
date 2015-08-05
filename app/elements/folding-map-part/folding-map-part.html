@@ -14,8 +14,14 @@
                 lat="{{lat}}"
                 lng="{{lng}}"
                 zoom="{{zoom}}"
+                device="{{device}}"
                 composition="{{deviceComposition}}">
     </web-socket>
+    <iron-localstorage id="localstorage"
+                       name="device"
+                       value="{{device}}"
+                       on-iron-localstorage-load-empty="_initializeDefaultDevice">
+    </iron-localstorage>
   </template>
 </dom-module>
 <script>
@@ -42,11 +48,21 @@
       deviceComposition: {
         type: Array,
         notify: true
+      },
+      device: {
+        type: Object,
+        notify: true
       }
     },
 
     ready: function () {
       this._initializeMap();
+    },
+
+    _initializeDefaultDevice: function() {
+      this.device = {
+        guid: null
+      };
     },
 
     _initializeMap: function () {
@@ -57,22 +73,34 @@
     },
 
     _setMapEvents: function() {
+
       var el = this;
+
+      var REQUEST_KIND = {
+        'REGISTER_DEVICE' : 'REGISTER_DEVICE',
+        'SET_VIEW' : 'SET_VIEW'
+      };
+
       el.$.map.addEventListener('google-map-dragend', function(e) {
-        el._sendSocketMessage(el._gatherMessageData());
+        el._sendSocketMessage(REQUEST_KIND.SET_VIEW, el._gatherMessageData());
       });
 
       el.$.map.addEventListener('google-map-ready', function() {
-        el._initializeWebSocketConnection();
+
+        console.log('Map ready...');
+
+
+
+        el.set('device.w', el._getMapWidth());
+        el.set('device.h', el._getMapHeight());
+
+        el._sendSocketMessage(REQUEST_KIND.REGISTER_DEVICE, el.device);
+
         google.maps.event.addListener(el.$.map.map, 'zoom_changed',
           function() {
-            el._sendSocketMessage(el._gatherMessageData());
+            el._sendSocketMessage(REQUEST_KIND.SET_VIEW, el._gatherMessageData());
         });
       });
-    },
-
-    _initializeWebSocketConnection: function() {
-      this._sendSocketMessage(JSON.stringify(this._getMapSize()));
     },
 
     _gatherMessageData: function() {
@@ -99,15 +127,20 @@
       }
     },
 
-    _getMapSize: function() {
-      return {
-        'h': this.$.map.getBoundingClientRect().height,
-        'w': this.$.map.getBoundingClientRect().width
-      }
+    _getMapWidth: function() {
+      return this.$.map.getBoundingClientRect().width;
     },
 
-    _sendSocketMessage: function(data) {
-      this.$.socketHandler.sendMessage(data);
+
+    _getMapHeight: function() {
+      return this.$.map.getBoundingClientRect().height;
+    },
+
+    _sendSocketMessage: function(kind, data) {
+      this.$.socketHandler.sendMessage(JSON.stringify({
+        kind: kind,
+        data: data
+      }));
     }
   });
 })();
