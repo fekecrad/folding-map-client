@@ -10,7 +10,7 @@
   </style>
   <template>
     <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
-    <composition-view deviceComposition="{{deviceComposition}}"></composition-view>
+    <composition-view composition="{{deviceComposition}}"></composition-view>
     <web-socket id="socketHandler"
                 lat="{{lat}}"
                 lng="{{lng}}"
@@ -69,7 +69,6 @@
     _initializeMap: function () {
       this.$.map.dragEvents = true;
       this.$.map.disableDefaultUi = true;
-      //this.$.map.signedIn = true;
       this._setMapEvents();
     },
 
@@ -87,14 +86,8 @@
       });
 
       el.$.map.addEventListener('google-map-ready', function() {
-
-        console.log('Map ready...');
-
-
-
         el.set('device.w', el._getMapWidth());
         el.set('device.h', el._getMapHeight());
-
         el._sendSocketMessage(REQUEST_KIND.REGISTER_DEVICE, el.device);
 
         google.maps.event.addListener(el.$.map.map, 'zoom_changed',
