@@ -62,13 +62,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _initializeWebSocket: function () {
       var el = this;
       el.webSocket = new WebSocket(this.url, this.protocol);
+
 //      el.webSocket.onopen = function () {
 //        el.webSocket.send('Connected');
 //      };
-      el.webSocket.onmessage = function (message) {
-        var data = JSON.parse(message.data);
 
-        el._handleResponse(data);
+      el.webSocket.onmessage = function (message) {
+        console.log(message);
+        var response = JSON.parse(message.data);
+
+        console.log(response);
+        el._handleResponse(response);
       }
     },
 
@@ -83,25 +87,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.webSocket.send(message);
     },
 
-    _isInitialResponse: function(data) {
-      return data.hasOwnProperty('guid')
-    },
-    _handleResponse: function(data) {
+    _handleResponse: function(response) {
 
       var RESPONSE_KIND = {
         'GENERATE_GUID': 'GENERATE_GUID',
         'SYNC_COMPOSITION' : 'SYNC_COMPOSITION',
         'SYNC_VIEW' : 'SYNC_VIEW'
-      }
+      };
 
-      if(data.kind === RESPONSE_KIND.GENERATE_GUID) {
-        this.set('device.guid', data.data.guid)
-      } else {
-        console.log(data);
-        this.lat = data.lat;
-        this.lng = data.lng;
-        this.zoom = data.zoom;
-        this.composition = data.composition;
+      if(response.kind === RESPONSE_KIND.GENERATE_GUID) {
+
+        console.log(response.data.guid);
+
+        this.set('device.guid', response.data.guid)
+
+      } else if(response.kind === RESPONSE_KIND.SYNC_VIEW) {
+        console.log(response);
+
+        this.lat = response.data.lat;
+        this.lng = response.data.lng;
+        this.zoom = response.data.zoom;
+        this.composition = response.data.composition;
       }
 
     }
