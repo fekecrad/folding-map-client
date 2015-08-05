@@ -68,16 +68,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       el.webSocket.onmessage = function (message) {
         var data = JSON.parse(message.data);
 
-        if(el._isInitialResponse(data)) {
-          el.set('device.guid', data.guid)
-        } else {
-          console.log(data);
-          el.lat = data.lat;
-          el.lng = data.lng;
-          el.zoom = data.zoom;
-          el.composition = data.composition;
-        }
-
+        el._handleResponse(data);
       }
     },
 
@@ -87,6 +78,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _isInitialResponse: function(data) {
       return data.hasOwnProperty('guid')
+    },
+    _handleResponse: function(data) {
+
+      var RESPONSE_KIND = {
+        'GENERATE_GUID': 'GENERATE_GUID',
+        'SYNC_COMPOSITION' : 'SYNC_COMPOSITION',
+        'SYNC_VIEW' : 'SYNC_VIEW'
+      }
+
+      if(data.kind === RESPONSE_KIND.GENERATE_GUID) {
+        this.set('device.guid', data.data.guid)
+      } else {
+        console.log(data);
+        this.lat = data.lat;
+        this.lng = data.lng;
+        this.zoom = data.zoom;
+        this.composition = data.composition;
+      }
+
     }
   });
 })();
