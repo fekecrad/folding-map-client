@@ -10,6 +10,7 @@
   </style>
   <template>
     <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
+    <composition-view deviceComposition="{{deviceComposition}}"></composition-view>
     <web-socket id="socketHandler"
                 lat="{{lat}}"
                 lng="{{lng}}"
@@ -112,7 +113,7 @@
         mapBounds: this._getMapBounds()
       })
     },
-    
+
     _getMapBounds: function() {
       var bounds = this.$.map.map.getBounds();
       return {
