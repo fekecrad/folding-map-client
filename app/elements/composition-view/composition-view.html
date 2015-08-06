@@ -31,14 +31,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'composition-view',
 
     properties: {
-      deviceComposition: {
+      composition: {
         type: Array,
         notify: true
       }
     },
 
+    observers: [
+      '_compositionChanged(composition.splices)'
+    ],
+
     compositionViewOpen: function () {
-      console.log(this.deviceComposition);
+      console.log(this.composition);
+    },
+
+    _compositionChanged: function(changeRecord) {
+      console.log('Composition changed');
+      console.log(this.composition);
     }
   });
 })();
