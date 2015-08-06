@@ -62,9 +62,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _initializeWebSocket: function () {
       var el = this;
       el.webSocket = new WebSocket(this.url, this.protocol);
+
+      el.webSocket.onopen = function() {
+        console.log('Connection opened');
+      };
+
+      el.webSocket.onerror = function() {
+        console.log('Error websocket')
+      };
+
+      el.webSocket.onclose = function() {
+        console.log('Connection closed')
+      };
+
       el.webSocket.onmessage = function (message) {
         el._handleResponse(JSON.parse(message.data));
-      }
+      };
     },
 
     sendMessage: function(message) {
@@ -104,7 +117,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _syncComposition: function(composition) {
       this.composition = composition;
+    },
+
+    _sendSocketMessage: function(kind, data) {
+      this.sendMessage(JSON.stringify({
+        kind: kind,
+        data: data
+      }));
     }
+
   });
 })();
 </script>
