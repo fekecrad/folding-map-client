@@ -43,13 +43,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     is: 'composition-view',
 
     properties: {
+      guid: {
+        type: String
+      },
       composition: {
         type: Array,
         notify: true
       },
       gapOffset: {
         type: Number,
-        value: 5
+        value: 3
       },
       resizeRatio: {
         type: Number
@@ -70,37 +73,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _drawComposition: function () {
-      this._calcuateResizeRatio();
+      this._calculateResizeRatio();
+      this._clearCanvas();
       for (var i = 0; i < this.composition.length; i++) {
         var device = this.composition[i];
         this._drawRectangle(device)
       }
     },
 
-    _calcuateResizeRatio: function () {
+    _calculateResizeRatio: function () {
       return 20;
     },
 
-    _drawRectangle: function (device) {
-      console.log(device);
-      var resizeRatio = this._getResizeRatio();
+    _clearCanvas: function () {
       var canvas = this.$.canvas;
-      if (canvas.getContext) {
-        var ctx = canvas.getContext('2d');
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    },
 
-        var x = device.fit.x / resizeRatio;
-        var y = device.fit.y / resizeRatio;
-        var w = device.w / resizeRatio;
-        var h = device.h / resizeRatio;
+    _drawRectangle: function (device) {
+      console.log(this.guid);
+      var resizeRatio = 20;
+      var canvas = this.$.canvas;
+      var ctx = canvas.getContext('2d');
 
-        ctx.fillStyle = "rgba(255 ,255 ,255 ,1)";
-        ctx.fillRect(x ,y ,w - this.gapOffset ,h - this.gapOffset);
+      var x = device.fit.x / resizeRatio;
+      var y = device.fit.y / resizeRatio;
+      var w = device.w / resizeRatio;
+      var h = device.h / resizeRatio;
 
-        console.log('drawing rectangle');
-        console.log('x: ' + x);
-        console.log('y: ' + y);
-        console.log('w: ' + w);
-        console.log('h: ' + h);
+      ctx.fillStyle = this._getRectangleColor(device.guid);
+      ctx.fillRect(x ,y ,w - this.gapOffset ,h - this.gapOffset);
+    },
+
+    _getRectangleColor: function (guid) {
+      if(guid === this.guid) {
+        return "rgba(255 ,255 ,255, 1)";
+      } else {
+        return "rgba(255 ,255 ,255, 0.5)";
       }
     }
   });

@@ -10,7 +10,7 @@
   </style>
   <template>
     <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
-    <composition-view composition="{{deviceComposition}}"></composition-view>
+    <composition-view composition="{{deviceComposition}}" guid="{{device.guid}}"></composition-view>
     <web-socket id="socketHandler"
                 lat="{{lat}}"
                 lng="{{lng}}"
