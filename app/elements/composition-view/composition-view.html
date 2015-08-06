@@ -19,10 +19,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       right: 10px;
     }
 
+    #compositionView {
+      background-color: rgba(255, 0, 0, 0.5);
+    }
+
+
   </style>
   <template>
     <paper-icon-button icon="view-quilt"
                        on-click="compositionViewOpen"></paper-icon-button>
+
+    <paper-dialog id="compositionView" entry-animation="scale-up-animation"
+            exit-animation="scale-down-animation">
+      <canvas></canvas>
+
+    </paper-dialog>
+
   </template>
 </dom-module>
 <script>
@@ -43,6 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     compositionViewOpen: function () {
       console.log(this.composition);
+      this.$.compositionView.toggle();
     },
 
     _compositionChanged: function(changeRecord) {
