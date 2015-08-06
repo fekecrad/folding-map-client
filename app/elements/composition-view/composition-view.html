@@ -22,16 +22,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #compositionView {
       background-color: rgba(255, 0, 0, 0.5);
     }
-
-
   </style>
   <template>
     <paper-icon-button icon="view-quilt"
-                       on-click="compositionViewOpen"></paper-icon-button>
+                       on-click="compositionViewOpen">
+    </paper-icon-button>
 
-    <paper-dialog id="compositionView" entry-animation="scale-up-animation"
-            exit-animation="scale-down-animation">
-      <canvas></canvas>
+    <paper-dialog id="compositionView"
+                  entry-animation="scale-up-animation"
+                  exit-animation="scale-down-animation">
+      <canvas id="canvas"></canvas>
 
     </paper-dialog>
 
@@ -46,6 +46,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       composition: {
         type: Array,
         notify: true
+      },
+      gapOffset: {
+        type: Number,
+        value: 5
+      },
+      resizeRatio: {
+        type: Number
       }
     },
 
@@ -53,14 +60,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_compositionChanged(composition.splices)'
     ],
 
-    compositionViewOpen: function () {
-      console.log(this.composition);
-      this.$.compositionView.toggle();
-    },
-
     _compositionChanged: function(changeRecord) {
       console.log('Composition changed');
-      console.log(this.composition);
+    },
+
+    compositionViewOpen: function () {
+      this.$.compositionView.toggle();
+      this._drawComposition();
+    },
+
+    _drawComposition: function () {
+      this._calcuateResizeRatio();
+      for (var i = 0; i < this.composition.length; i++) {
+        var device = this.composition[i];
+        this._drawRectangle(device)
+      }
+    },
+
+    _calcuateResizeRatio: function () {
+      return 20;
+    },
+
+    _drawRectangle: function (device) {
+      console.log(device);
+      var resizeRatio = this._getResizeRatio();
+      var canvas = this.$.canvas;
+      if (canvas.getContext) {
+        var ctx = canvas.getContext('2d');
+
+        var x = device.fit.x / resizeRatio;
+        var y = device.fit.y / resizeRatio;
+        var w = device.w / resizeRatio;
+        var h = device.h / resizeRatio;
+
+        ctx.fillStyle = "rgba(255 ,255 ,255 ,1)";
+        ctx.fillRect(x ,y ,w - this.gapOffset ,h - this.gapOffset);
+
+        console.log('drawing rectangle');
+        console.log('x: ' + x);
+        console.log('y: ' + y);
+        console.log('w: ' + w);
+        console.log('h: ' + h);
+      }
     }
   });
 })();
