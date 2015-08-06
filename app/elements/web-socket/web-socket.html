@@ -62,25 +62,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _initializeWebSocket: function () {
       var el = this;
       el.webSocket = new WebSocket(this.url, this.protocol);
-
-//      el.webSocket.onopen = function () {
-//        el.webSocket.send('Connected');
-//      };
-
       el.webSocket.onmessage = function (message) {
-        console.log(message);
-        var response = JSON.parse(message.data);
-
-        console.log(response);
-        el._handleResponse(response);
+        el._handleResponse(JSON.parse(message.data));
       }
-    },
-
-    _updateComposition: function () {
-      for(var i in this.composition)
-      var device = this.composition[i];
-      console.log(device.fit.x);
-      console.log(device.fit.y);
     },
 
     sendMessage: function(message) {
@@ -95,21 +79,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         'SYNC_VIEW' : 'SYNC_VIEW'
       };
 
-      if(response.kind === RESPONSE_KIND.GENERATE_GUID) {
-
-        console.log(response.data.guid);
-
-        this.set('device.guid', response.data.guid)
-
-      } else if(response.kind === RESPONSE_KIND.SYNC_VIEW) {
-        console.log(response);
-
-        this.lat = response.data.lat;
-        this.lng = response.data.lng;
-        this.zoom = response.data.zoom;
-        this.composition = response.data.composition;
+      switch (response.kind) {
+        case RESPONSE_KIND.GENERATE_GUID:
+          this._setGuid(response.data.guid);
+          break;
+        case RESPONSE_KIND.SYNC_VIEW:
+          this._syncView(response.data);
+          break;
+        case RESPONSE_KIND.SYNC_COMPOSITION:
+          this._syncComposition(response.data);
+          break
       }
+    },
 
+    _setGuid: function(guid) {
+      this.set('device.guid', guid);
+    },
+
+    _syncView: function(data) {
+      this.lat = data.lat;
+      this.lng = data.lng;
+      this.zoom = data.zoom;
+    },
+
+    _syncComposition: function(composition) {
+      console.log(composition);
+      this.composition = composition;
     }
   });
 })();
