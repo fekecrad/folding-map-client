@@ -77,23 +77,18 @@
 
       var el = this;
 
-      var REQUEST_KIND = {
-        'REGISTER_DEVICE' : 'REGISTER_DEVICE',
-        'SET_VIEW' : 'SET_VIEW'
-      };
-
       el.$.map.addEventListener('google-map-dragend', function(e) {
-        el.$.socketHandler._sendSocketMessage(REQUEST_KIND.SET_VIEW, el._gatherMessageData());
+        el.$.socketHandler._sendSocketMessage(el.$.socketHandler.kind.SET_VIEW, el._gatherMessageData());
       });
 
       el.$.map.addEventListener('google-map-ready', function() {
         el.set('device.w', el._getMapWidth());
         el.set('device.h', el._getMapHeight());
-        el.$.socketHandler._sendSocketMessage(REQUEST_KIND.REGISTER_DEVICE, el.device);
+        el.$.socketHandler._sendSocketMessage(el.$.socketHandler.kind.REGISTER_DEVICE, el.device);
 
         google.maps.event.addListener(el.$.map.map, 'zoom_changed',
           function() {
-            el.$.socketHandler._sendSocketMessage(REQUEST_KIND.SET_VIEW, el._gatherMessageData());
+            el.$.socketHandler._sendSocketMessage(el.$.socketHandler.kind.SET_VIEW, el._gatherMessageData());
         });
       });
     },
