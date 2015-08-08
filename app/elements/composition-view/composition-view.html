@@ -22,9 +22,33 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     #compositionView {
       background-color: rgba(255, 0, 0, 0.5);
     }
+
+    .compositionChange {
+      animation-duration: 1200ms;
+      animation-name: blink;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+      -webkit-animation:blink 1200ms infinite; /* Safari and Chrome */
+    }
+    @keyframes blink {
+      from {
+        color:red;
+      }
+      to {
+        color:black;
+      }
+    }
+    @-webkit-keyframes blink {
+      from {
+        color:red;
+      }
+      to {
+        color:black;
+      }
+    }
   </style>
   <template>
-    <paper-icon-button icon="view-quilt"
+    <paper-icon-button id="openButton" icon="view-quilt"
                        on-click="compositionViewOpen">
     </paper-icon-button>
 
@@ -56,6 +80,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
       resizeRatio: {
         type: Number
+      },
+      compositionChangeAlert: {
+        type: String,
+        value: 'compositionChange'
       }
     },
 
@@ -64,10 +92,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     ],
 
     _compositionChanged: function(changeRecord) {
-      console.log('Composition changed');
+      this.$.openButton.toggleClass(this.compositionChangeAlert);
     },
 
     compositionViewOpen: function () {
+      if(this.$.openButton.classList.contains(this.compositionChangeAlert)) {
+        this.$.openButton.toggleClass(this.compositionChangeAlert);
+      }
       this.$.compositionView.toggle();
       this._drawComposition();
     },
@@ -82,7 +113,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _calculateResizeRatio: function () {
-      return 20;
+      return 18;
     },
 
     _clearCanvas: function () {
@@ -92,8 +123,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _drawRectangle: function (device) {
-      console.log(this.guid);
-      var resizeRatio = 20;
+      var resizeRatio = 16;
       var canvas = this.$.canvas;
       var ctx = canvas.getContext('2d');
 
