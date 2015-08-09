@@ -33,5 +33,5 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "repository": "https://github.com/thunderball1/folding-map-server.git"
+  "repository": "https://github.com/fradovan/folding-map-client"
 }
