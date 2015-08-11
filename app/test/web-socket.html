@@ -13,29 +13,31 @@
   <link rel="import" href="../elements/web-socket/web-socket.html">
 </head>
 <body>
-
-<test-fixture id="basic">
-  <template>
-    <web-socket></web-socket>
-  </template>
-</test-fixture>
+  <web-socket id="socketHandler"
+              url="ws://localhost:3003">
+  </web-socket>
 <script>
 
-
-
-
+  window.WebSocket = MockWebSocket;
+  var socket = document.querySelector('#socketHandler');
 
   suite('web-socket tests', function() {
 
-    var mockServer = new MockServer('ws://localhost:8080');
-    mockServer.on('connection', function(server) {
-      mockServer.send('test message 1');
-      mockServer.send('test message 2');
-    });
-    window.WebSocket = MockWebSocket;
+    test('If guid is set after registration', function() {
+      var guid = '1234567890';
+      var mockServer = new MockServer('ws://localhost:3003');
 
-    test('Welcome!', function() {
-      assert.equal(true, true);
+      mockServer.on('message', function(server) {
+        mockServer.send(JSON.stringify({
+          kind: 'NEW_GUID',
+          data: guid
+        }));
+      });
+
+      //set timeout so mockserver can be set in time
+      setTimeout(function() {
+        assert.equal(socket.guid, guid);
+      }, 100);
     });
 
   });
