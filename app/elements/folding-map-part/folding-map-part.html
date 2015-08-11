@@ -12,6 +12,7 @@
     <google-map id="map" latitude="{{lat}}" longitude="{{lng}}" zoom="{{zoom}}"></google-map>
     <composition-view composition="{{deviceComposition}}" guid="{{device.guid}}"></composition-view>
     <web-socket id="socketHandler"
+                url="ws://localhost:3002"
                 lat="{{lat}}"
                 lng="{{lng}}"
                 zoom="{{zoom}}"

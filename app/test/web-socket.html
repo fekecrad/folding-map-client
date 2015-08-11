@@ -8,6 +8,7 @@
   <script src="../../bower_components/web-component-tester/browser.js"></script>
   <script src="../../bower_components/test-fixture/test-fixture-mocha.js"></script>
   <link rel="import" href="../../bower_components/test-fixture/test-fixture.html">
+  <script rel="import" src="../../bower_components/mock-socket/dist/mock-socket.min.js"></script>
 
   <link rel="import" href="../elements/web-socket/web-socket.html">
 </head>
@@ -20,7 +21,19 @@
 </test-fixture>
 <script>
 
+
+
+
+
   suite('web-socket tests', function() {
+
+    var mockServer = new MockServer('ws://localhost:8080');
+    mockServer.on('connection', function(server) {
+      mockServer.send('test message 1');
+      mockServer.send('test message 2');
+    });
+    window.WebSocket = MockWebSocket;
+
     test('Welcome!', function() {
       assert.equal(true, true);
     });
